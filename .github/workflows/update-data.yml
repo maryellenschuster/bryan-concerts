@@ -1,0 +1,37 @@
+name: Update Concert Data Weekly
+
+on:
+  schedule:
+    - cron: '0 12 * * 0'  # Every Sunday at 12:00 UTC
+  workflow_dispatch:      # Allows manual trigger in GitHub
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install pandas requests numpy
+
+      - name: Run scraper
+        env:
+          SETLIST_API_KEY: ${{ secrets.SETLIST_API_KEY }}
+        run: python scripts/Scraper.py -u soundguy28 -f json
+
+      - name: Commit and push updated JSON
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add public/gigs_soundguy28.json
+          git commit -m "Auto-update concert data" || echo "No changes to commit"
+          git push
+
+
