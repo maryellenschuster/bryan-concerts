@@ -3,6 +3,7 @@ import requests
 import numpy as np
 import argparse
 import time
+import os
 API_ENDPOINT = "https://api.setlist.fm/rest/1.0/user/{}/attended?p={}"
 
 
@@ -13,9 +14,9 @@ def backup(username, format):
     gigs = None
 
     headers = {
-        'x-api-key': '-mmCfiykqVd_YuvwoSRqU6a89qbzDVoxZ1Js',
-        'Accept': 'application/json'
-    }
+    'x-api-key': os.environ['SETLIST_API_KEY'],
+    'Accept': 'application/json'
+}
 
     # Initial page
     gigs_query = API_ENDPOINT.format(username, 1)
@@ -55,7 +56,8 @@ def backup(username, format):
         if format == 'excel':
             gigs_df.to_excel(f'gigs_{username}.xlsx', index=False)
         elif format == 'json':
-            gigs_df.to_json(f'public/gigs_{username}.json', orient='records', indent=2)
+            gigs_df.to_json(f'../public/gigs_{username}.json', orient='records', indent=2)
+
         else:
             gigs_df.to_csv(f'gigs_{username}.csv', index=False)
         print(f"Saved {len(gigs_df)} records.")
