@@ -1,61 +1,100 @@
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background-color: #0b1830;
+  color: white;
+}
+
 .App {
-  font-family: 'Arial', sans-serif;
   padding: 2rem;
-  background-color: #f9f9f9;
-  color: #333;
-  max-width: 900px;
+  max-width: 1300px;
   margin: 0 auto;
 }
 
-h1, h2 {
-  text-align: center;
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
 }
 
-.chart-section {
-  
+.logo {
+  height: 60px;
+  width: auto;
+}
+
+h1 {
+  color: #66c2ff;
+  margin: 0;
+}
+
+.hero-metrics {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin: 2rem 0 1rem;
+}
+
+.main-metric {
+  font-size: 1.5rem;
+  padding: 1rem 2rem;
+  background-color: #4ABE6C;
+  color: white;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+.sub-metrics {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
   margin-bottom: 2rem;
+  flex-wrap: wrap;
 }
 
-.concert-list {
-  list-style: none;
-  padding: 0;
-}
-
-.concert-card {
-  background: white;
+.metric {
+  background-color: #1f2e4a;
   padding: 1rem;
-  margin: 1rem 0;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  border-radius: 6px;
+  font-size: 1rem;
+  box-shadow: 0 2px 6px #000;
 }
 
+.song-of-day {
+  background-color: #1f2e4a;
+  padding: 1rem 2rem;
+  margin: 2rem auto;
+  border-left: 5px solid #00e5ff;
+  width: fit-content;
+  text-align: center;
+  border-radius: 8px;
+}
+
+.song-of-day h2 {
+  color: #00e5ff;
+}
+
+.charts-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.chart-box, .map-box {
+  background-color: #1a273e;
+  padding: 1rem;
+  margin: 1rem;
+  border-radius: 8px;
+  flex: 1;
+  min-width: 300px;
+  max-width: 600px;
+}
 
 .filters {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  margin: 1rem 0 2rem;
+  margin: 2rem 0;
   justify-content: center;
-}
-
-.filters label {
-  display: flex;
-  flex-direction: column;
-  font-weight: bold;
-  font-size: 0.9rem;
-}
-
-.filters select, .filters button {
-  padding: 0.4rem;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  margin-top: 0.25rem;
-}
-
-.filters button {
-  font-weight: bold;
-  background-color: #007acc;
-  color: white;
-  border: none;
-  cursor: pointer;
 }
