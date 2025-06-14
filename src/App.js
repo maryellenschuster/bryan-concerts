@@ -1,9 +1,10 @@
 
 import React, { useState, useEffect } from "react";
 import "./App.css";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, LineChart, Line } from "recharts";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import Select from "react-select";
+import {
+  BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, LabelList, LineChart, Line
+} from "recharts";
+import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet";
 import { DateRange } from "react-date-range";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
@@ -11,7 +12,7 @@ import "leaflet/dist/leaflet.css";
 import data from "./gigs_soundguy28.json";
 import Table from "./Table";
 import SummaryTable from "./SummaryTable";
-import logo from "./assets/grateful-dead.png"; // Replace this with the actual path to your logo file
+import logo from "./assets/grateful-dead.png";
 
 function App() {
   const [concerts, setConcerts] = useState([]);
@@ -21,13 +22,8 @@ function App() {
   const [concertHistory, setConcertHistory] = useState([]);
   const [venueCounts, setVenueCounts] = useState([]);
   const [songOfDay, setSongOfDay] = useState(null);
-
-  const [artistOpt, setArtistOpt] = useState([]);
-  const [venueOpt, setVenueOpt] = useState([]);
-  const [cityOpt, setCityOpt] = useState([]);
-  const [songOpt, setSongOpt] = useState([]);
+  const [collapsed, setCollapsed] = useState({ summary: false, all: false });
   const [dateRange, setDateRange] = useState([{ startDate: new Date("2000-01-01"), endDate: new Date(), key: "selection" }]);
-  const [filters, setFilters] = useState({ artist: null, venue: null, city: null, song: null });
 
   useEffect(() => {
     const parsed = data.map(d => ({
@@ -36,26 +32,10 @@ function App() {
       songsArray: d.songs ? d.songs.split(",").map(s => s.trim()) : []
     }));
     setConcerts(parsed);
-
-    const unique = (arr, key) => [...new Set(arr.map(x => x[key]))].map(label => ({ label, value: label }));
-    setArtistOpt(unique(parsed, "artist"));
-    setVenueOpt(unique(parsed, "venue"));
-    setCityOpt(unique(parsed, "city"));
-    const songSet = new Set();
-    parsed.forEach(c => c.songsArray.forEach(s => songSet.add(s)));
-    setSongOpt([...songSet].map(label => ({ label, value: label })));
   }, []);
 
   useEffect(() => {
-    const { artist, venue, city, song } = filters;
-    let filteredData = concerts.filter(c => {
-      const inDateRange = c.date >= dateRange[0].startDate && c.date <= dateRange[0].endDate;
-      const byArtist = !artist || c.artist === artist.value;
-      const byVenue = !venue || c.venue === venue.value;
-      const byCity = !city || c.city === city.value;
-      const bySong = !song || c.songsArray.includes(song.value);
-      return inDateRange && byArtist && byVenue && byCity && bySong;
-    });
+    let filteredData = concerts.filter(c => c.date >= dateRange[0].startDate && c.date <= dateRange[0].endDate);
     setFiltered(filteredData);
 
     const songCounts = {};
@@ -92,7 +72,7 @@ function App() {
       const song = closest.songsArray[Math.floor(Math.random() * closest.songsArray.length)];
       setSongOfDay({ song, artist: closest.artist, venue: closest.venue, city: closest.city, date: closest.date.toDateString() });
     }
-  }, [concerts, filters, dateRange]);
+  }, [concerts, dateRange]);
 
   const totalMinutes = filtered.reduce((sum, c) => sum + c.songsArray.length, 0) * 5.5;
   const gratefulDeadDrumsMinutes = concerts.filter(c => c.songsArray.includes(" Drums")).length * 9.5;
@@ -104,6 +84,7 @@ function App() {
         <img src={logo} alt="Logo" className="logo" />
         <h1>Bryan's Concert Dashboard</h1>
       </div>
+
       <div className="hero-metrics">
         <div className="main-metric">🎶 Concerts: {filtered.length}</div>
         <div className="main-metric">⏱️ Minutes Listened: {totalMinutes.toLocaleString()}</div>
@@ -134,10 +115,12 @@ function App() {
           <h2>Top Songs</h2>
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={topSongs}>
-              <XAxis dataKey="name" />
-              <YAxis />
+              <XAxis dataKey="name" stroke="#ccc" />
+              <YAxis stroke="#ccc" />
               <Tooltip />
-              <Bar dataKey="count" fill="#00c0ff" />
+              <Bar dataKey="count" fill="#00c0ff">
+                <LabelList dataKey="count" position="top" />
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -145,38 +128,46 @@ function App() {
           <h2>Top Artists</h2>
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={topArtists}>
-              <XAxis dataKey="name" />
-              <YAxis />
+              <XAxis dataKey="name" stroke="#ccc" />
+              <YAxis stroke="#ccc" />
               <Tooltip />
-              <Bar dataKey="count" fill="#00c0ff" />
+              <Bar dataKey="count" fill="#00c0ff">
+                <LabelList dataKey="count" position="top" />
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
+
       <div className="charts-row">
         <div className="chart-box">
           <h2>Concert History</h2>
           <ResponsiveContainer width="100%" height={250}>
             <LineChart data={concertHistory}>
-              <XAxis dataKey="month" />
-              <YAxis />
-              <CartesianGrid stroke="#ccc" />
+              <XAxis dataKey="month" stroke="#ccc" />
+              <YAxis stroke="#ccc" />
+              <CartesianGrid stroke="#444" />
               <Tooltip />
-              <Line type="monotone" dataKey="count" stroke="#ff70c0" />
+              <Line type="monotone" dataKey="count" stroke="#4ABE6C" strokeWidth={3} dot={{ r: 3 }} />
             </LineChart>
           </ResponsiveContainer>
         </div>
         <div className="map-box">
           <h2>Concert Locations</h2>
-          <MapContainer center={[38.03, -78.48]} zoom={4} style={{ height: "250px", width: "100%" }}>
+          <MapContainer center={[38.03, -78.48]} zoom={5} style={{ height: "250px", width: "100%" }}>
             <TileLayer
               attribution="© OpenStreetMap contributors"
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             {venueCounts.map((v, idx) => (
-              <Marker position={[38 + idx * 0.01, -78 + idx * 0.01]} key={idx}>
+              <CircleMarker
+                key={idx}
+                center={[38 + idx * 0.01, -78 + idx * 0.01]}
+                radius={Math.min(15, 3 + v.count)}
+                pathOptions={{ color: "#00e5ff", fillOpacity: 0.6 }}
+              >
                 <Popup>{v.location}: {v.count} shows</Popup>
-              </Marker>
+              </CircleMarker>
             ))}
           </MapContainer>
         </div>
@@ -189,14 +180,15 @@ function App() {
           moveRangeOnFirstSelection={false}
           ranges={dateRange}
         />
-        <Select options={artistOpt} onChange={v => setFilters(f => ({ ...f, artist: v }))} placeholder="Filter by artist" />
-        <Select options={venueOpt} onChange={v => setFilters(f => ({ ...f, venue: v }))} placeholder="Filter by venue" />
-        <Select options={cityOpt} onChange={v => setFilters(f => ({ ...f, city: v }))} placeholder="Filter by city" />
-        <Select options={songOpt} onChange={v => setFilters(f => ({ ...f, song: v }))} placeholder="Filter by song" />
       </div>
 
-      <Table data={filtered} />
-      <SummaryTable data={filtered} />
+      <div className="collapsible">
+        <h2 onClick={() => setCollapsed(c => ({ ...c, summary: !c.summary }))}>Summary Table ▾</h2>
+        {!collapsed.summary && <SummaryTable data={filtered} />}
+
+        <h2 onClick={() => setCollapsed(c => ({ ...c, all: !c.all }))}>All Concert Data ▾</h2>
+        {!collapsed.all && <Table data={filtered} />}
+      </div>
     </div>
   );
 }
