@@ -56,7 +56,7 @@ def backup(username, format):
         if format == 'excel':
             gigs_df.to_excel(f'gigs_{username}.xlsx', index=False)
         elif format == 'json':
-            gigs_df.to_json(f'../public/gigs_{username}.json', orient='records', indent=2)
+            gigs_df.to_json(f'../src/gigs_{username}.json', orient='records', indent=2)
 
         else:
             gigs_df.to_csv(f'gigs_{username}.csv', index=False)
