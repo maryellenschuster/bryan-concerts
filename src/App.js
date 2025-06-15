@@ -40,13 +40,14 @@ function App() {
 
     const songCounts = {};
     filteredData.forEach(d =>
-    d.songsArray.forEach(s => {
-    const trimmed = s.trim().toLowerCase();
-    if (trimmed !== "drums") {
-      songCounts[s] = (songCounts[s] || 0) + 1;
-    }
-  })
-);
+      d.songsArray.forEach(s => {
+        const trimmed = s.trim();
+        const lower = trimmed.toLowerCase();
+        if (lower !== "drums") {
+          songCounts[trimmed] = (songCounts[trimmed] || 0) + 1;
+        }
+      })
+    );
     setTopSongs(Object.entries(songCounts).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count).slice(0, 6));
 
     const artistCounts = {};
