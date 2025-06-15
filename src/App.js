@@ -39,8 +39,8 @@ function App() {
     setFiltered(filteredData);
 
     const songCounts = {};
-filteredData.forEach(d =>
-  d.songsArray.forEach(s => {
+    filteredData.forEach(d =>
+    d.songsArray.forEach(s => {
     const trimmed = s.trim().toLowerCase();
     if (trimmed !== "drums") {
       songCounts[s] = (songCounts[s] || 0) + 1;
