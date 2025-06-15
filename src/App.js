@@ -82,7 +82,9 @@ function App() {
   }, [concerts, dateRange]);
 
   const totalMinutes = filtered.reduce((sum, c) => sum + c.songsArray.length, 0) * 5.5;
-  const gratefulDeadDrumsMinutes = concerts.filter(c => c.songsArray.includes(" Drums")).length * 9.5;
+  const gratefulDeadDrumsMinutes = concerts.reduce((sum, c) => {
+    return sum + c.songsArray.filter(s => s.trim().toLowerCase() === "drums").length * 9.5;
+  }, 0);
   const distinctYears = new Set(filtered.map(c => c.date.getFullYear())).size;
 
   return (
